@@ -55,8 +55,30 @@ def train_error_asses(in_s,out_s,w_train,lamb):
     y_o_pred = np.sign(np.dot(psi_o,w_t))    # calculate the out sample classification predictions
     class_e_i = np.mean(y_i != y_i_pred)
     class_e_o = np.mean(y_o != y_o_pred)
+    plot_bound(x_feat_i,y_i,x_feat_o,y_o,w_t)
     return(class_e_i,class_e_o)
-    
+
+# function that plots the separation boundary for a given weight set
+def plot_bound(x_in,y_in,x_out,y_out,weight):
+    s = 100
+    Z = np.zeros((s,s))
+    x1 = np.linspace(x_out[:,0].min(),x_out[:,0].max(),s)
+    x2 = np.linspace(x_out[:,1].min(),x_out[:,1].max(),s)
+    X1,X2 = np.meshgrid(x1,x2)
+    for i in range(0,s):
+        x_cols = np.column_stack((X1[:,i],X2[:,i]))
+        Z[:,i] = np.dot(featurise(x_cols),weight)
+    plt.contour(X1,X2,Z,levels=[0])
+    plt.scatter(x_in[y_in[:]==1][:,0],x_in[y_in[:]==1][:,1])
+    plt.scatter(x_in[y_in[:]==-1][:,0],x_in[y_in[:]==-1][:,1], c = "red")
+    plt.title("In sample data with separation contour")
+    plt.show()
+    plt.contour(X1,X2,Z,levels=[0])
+    plt.scatter(x_out[y_out[:]==1][:,0],x_out[y_out[:]==1][:,1])
+    plt.scatter(x_out[y_out[:]==-1][:,0],x_out[y_out[:]==-1][:,1], c = "red")
+    plt.title("Out of sample data with separation contour")
+    plt.show()
+
 #load data
 in_s = np.loadtxt('C:\\Users\\philip.ball\\Documents\\AI-DS\\edX CS1156x\\Python Scripts\\HW6Q2 Data\\in.dta')
 out_s = np.loadtxt('C:\\Users\\philip.ball\\Documents\\AI-DS\\edX CS1156x\\Python Scripts\\HW6Q2 Data\\out.dta')
