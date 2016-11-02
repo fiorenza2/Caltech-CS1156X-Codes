@@ -25,3 +25,11 @@ def featurise(x_feat):
     psi_x = np.column_stack((ones_i,x_i,x_sq_i,x_cr_i,x_mods_i,x_modp_i))
     return(psi_x)
 
+# function to create the non-regularised solution for optimal weights
+def w_lin(psi_x,y):
+    psi_tr = np.transpose(psi_x)
+    psi_sq = np.dot(psi_tr,psi_x)
+    invert = np.linalg.inv(psi_sq)
+    w = np.dot(np.dot(invert,psi_tr),y)
+    return w
+
