@@ -83,5 +83,11 @@ def plot_bound(x_in,y_in,x_out,y_out,weight):
 in_s = np.loadtxt('C:\\Users\\philip.ball\\Documents\\AI-DS\\edX CS1156x\\Python Scripts\\HW6Q2 Data\\in.dta')
 out_s = np.loadtxt('C:\\Users\\philip.ball\\Documents\\AI-DS\\edX CS1156x\\Python Scripts\\HW6Q2 Data\\out.dta')
 
+k = -3
+
+lamb = 10**k
+
+print("Non-regularized")
 print(train_error_asses(in_s,out_s,w_lin,"NA"))
-print(train_error_asses(in_s,out_s,w_aug,10**1))
+print("\nRegularized with lambda " + str(lamb))
+print(train_error_asses(in_s,out_s,w_aug,lamb))
