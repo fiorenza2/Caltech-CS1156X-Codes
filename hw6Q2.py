@@ -9,10 +9,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-#load data
-in_s = np.loadtxt('C:\\Users\\philip.ball\\Documents\\AI-DS\\edX CS1156x\\Python Scripts\\HW6Q2 Data\\in.dta')
-out_s = np.loadtxt('C:\\Users\\philip.ball\\Documents\\AI-DS\\edX CS1156x\\Python Scripts\\HW6Q2 Data\\out.dta')
-
 #function to create the feature matrix given the input [x1,x2] (but can also have y term)
 def featurise(x_feat):
     r_i,c_i = x_feat.shape    #get size attributes of the in-sample data
@@ -33,3 +29,23 @@ def w_lin(psi_x,y):
     w = np.dot(np.dot(invert,psi_tr),y)
     return w
 
+# function which returns the in and out of sample errors for a given set of inputs and training schema
+def train_error_asses(in_s,out_s,w_train):
+    x_feat_i = in_s[:,:2]   # get the features of the in sample
+    x_feat_o = out_s[:,:2]  # get the features of the out sample
+    y_i = in_s[:,2]     # get the classification of the in sample
+    y_o = out_s[:,2]    # get the classification of the out sample
+    psi_i = featurise(x_feat_i) # get the transformed feature vector in sample
+    psi_o = featurise(x_feat_o) # get the transformed feature vector out sample
+    w_t = w_train(psi_i,y_i)    # get the weights by training on the in sample
+    y_i_pred = np.sign(np.dot(psi_i,w_t))    # calculate the in sample classification predictions
+    y_o_pred = np.sign(np.dot(psi_o,w_t))    # calculate the out sample classification predictions
+    class_e_i = np.mean(y_i != y_i_pred)
+    class_e_o = np.mean(y_o != y_o_pred)
+    return(class_e_i,class_e_o)
+    
+#load data
+in_s = np.loadtxt('C:\\Users\\philip.ball\\Documents\\AI-DS\\edX CS1156x\\Python Scripts\\HW6Q2 Data\\in.dta')
+out_s = np.loadtxt('C:\\Users\\philip.ball\\Documents\\AI-DS\\edX CS1156x\\Python Scripts\\HW6Q2 Data\\out.dta')
+
+print(train_error_asses(in_s,out_s,w_lin))
