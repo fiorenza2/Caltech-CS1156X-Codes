@@ -60,7 +60,7 @@ def train_error_asses(in_s,out_s,w_train,lamb):
 
 # function that plots the separation boundary for a given weight set
 def plot_bound(x_in,y_in,x_out,y_out,weight):
-    s = 100
+    s = 1000
     Z = np.zeros((s,s))
     x1 = np.linspace(x_out[:,0].min(),x_out[:,0].max(),s)
     x2 = np.linspace(x_out[:,1].min(),x_out[:,1].max(),s)
@@ -83,7 +83,7 @@ def plot_bound(x_in,y_in,x_out,y_out,weight):
 in_s = np.loadtxt('C:\\Users\\philip.ball\\Documents\\AI-DS\\edX CS1156x\\Python Scripts\\HW6Q2 Data\\in.dta')
 out_s = np.loadtxt('C:\\Users\\philip.ball\\Documents\\AI-DS\\edX CS1156x\\Python Scripts\\HW6Q2 Data\\out.dta')
 
-k = -3
+k = -1
 
 lamb = 10**k
 
