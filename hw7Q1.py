@@ -51,5 +51,26 @@ out_s = np.loadtxt('C:\\Users\\philip.ball\\Documents\\AI-DS\\edX CS1156x\\Pytho
 train = in_s[:25,:]
 val = in_s[25:,:]
 
+train_r = val
+val_r = train
+
+# Q1 answer below
+print("Q1:")
 for k in range(3,8):
-    print(train_error_asses(train,val,w_lin,k))
+    print("k = " + str(k) + " " + str(train_error_asses(train,val,w_lin,k)))
+
+print("\nQ2:")
+# Q2 answer below
+for k in range(3,8):
+    print("k = " + str(k) + " " + str(train_error_asses(train,out_s,w_lin,k)))
+
+print("\nQ3:")
+# Q3 answer below
+for k in range(3,8):
+    print("k = " + str(k) + " " + str(train_error_asses(train_r,val_r,w_lin,k)))
+
+
+print("\nQ4:")
+# Q3 answer below
+for k in range(3,8):
+    print("k = " + str(k) + " " + str(train_error_asses(train_r,out_s,w_lin,k)))
