@@ -18,7 +18,7 @@ def e_exper(n):
     e_val = np.zeros(n)
     for i in range(0,n):
         e_val[i] = e_min()
-    plt.pdf(e_val,100)
+    plt.hist(e_val,100)
     return(np.mean(e_val))
     
 print(e_exper(100000))
