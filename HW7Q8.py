@@ -44,7 +44,7 @@ def percep(x1,x2,y):
         w = w + y_mis[p]*x_mis[p,:]
     return w
 
-def exper_percep(N):
+def test_percep(N):
     x1,x2,y,l_x1,l_x2 = rand_inst(10)
     w = percep(x1,x2,y)
     sep_line = np.zeros(2)
@@ -62,4 +62,4 @@ def exper_percep(N):
     plt.ylabel("x2")
     plt.show()
     
-exper_percep(10)
+test_percep(10)
