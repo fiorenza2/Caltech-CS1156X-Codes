@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from sklearn.svm import SVC
 
 def SVM_Poly(x_train,y_train,Deg,Reg):
-    svc = SVC(kernel = 'poly', C = Reg, degree = Deg, shrinking = False)
+    svc = SVC(kernel = 'poly', C = Reg, degree = Deg, shrinking = False, gamma = 1.0, coef0 = 1)
     y_poly = svc.fit(x_train,y_train)
     return(y_poly)
     
@@ -68,18 +68,24 @@ y_train = feat_train[:,0]
 #dig = [0,2,4,6,8]
 #dig = [1,3,5,7,9]
 
-Deg = 2
-#Reg = 0.01
-Reg = [0.001,0.01,0.1,1]
+Deg = 5
+Reg = 1
+#Reg = [0.001,0.01,0.1,1]
 
 #for num in dig:
 #    Ein,SVs = EinCalc(x_train, y_train, Deg, Reg, num)
 #    print('error of '+ str(num) + ' vs all: ' + str(Ein))
 #    print('SVs of '+ str(num) + ' vs all: ' + str(SVs))
 
-for C in Reg:
-    Ein,SVs,model = EinCalc(x_train,y_train,Deg,C,1,5)
-    Eout = EoutCalc(x_test,y_test,model,1,5)
-    print('in sample error of C = '+ str(C) + ': ' + str(Ein))
-    print('out of sample error of C = '+ str(C) + ': ' + str(Eout))
-    print('SVs of C = '+ str(C) + ': ' + str(SVs))
+Ein,SVs,model = EinCalc(x_train,y_train,Deg,Reg,1,5)
+Eout = EoutCalc(x_test,y_test,model,1,5)
+print(Ein)
+print(SVs)
+print(Eout)
+
+#for C in Reg:
+#    Ein,SVs,model = EinCalc(x_train,y_train,Deg,C,1,5)
+#    Eout = EoutCalc(x_test,y_test,model,1,5)
+#    print('in sample error of C = '+ str(C) + ': ' + str(Ein))
+#    print('out of sample error of C = '+ str(C) + ': ' + str(Eout))
+#    print('SVs of C = '+ str(C) + ': ' + str(SVs))
