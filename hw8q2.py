@@ -25,7 +25,8 @@ def EinCalc(num_class,x_test,y_test,Deg,Reg):
     fitted,y_act = oneVall(num_class,x_test,y_test,Deg,Reg)
     y_hyp = np.sign(fitted.predict(x_test))
     Ein = (y_act != y_hyp)
-    return(Ein.mean())
+    No_SV = fitted.n_support_
+    return(Ein.mean(),No_SV)
     
 feat_test = np.loadtxt('C:\\Users\\philip.ball\\Documents\\AI-DS\\edX CS1156x\\Python Scripts\\HW8Q2 Data\\features.test.txt')
 feat_train = np.loadtxt('C:\\Users\\philip.ball\\Documents\\AI-DS\\edX CS1156x\\Python Scripts\\HW8Q2 Data\\features.train.txt')
@@ -35,12 +36,14 @@ y_test = feat_test[:,0]
 x_train = feat_train[:,1:]
 y_train = feat_train[:,0]
 
-#dig = [0,2,4,6,8]
-dig = [1,3,5,7,9]
+dig = [0,2,4,6,8]
+#dig = [1,3,5,7,9]
 
 Deg = 2
 Reg = 0.01
 
 for num in dig:
-    print('error of '+ str(num) + ' vs all: ' + str(EinCalc(num,x_test,y_test,Deg,Reg)))
+    Ein,SVs = EinCalc(num,x_test,y_test,Deg,Reg)
+    print('error of '+ str(num) + ' vs all: ' + str(Ein))
+    print('SVs of '+ str(num) + ' vs all: ' + str(SVs))
     
