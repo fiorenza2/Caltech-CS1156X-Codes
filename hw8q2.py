@@ -9,21 +9,34 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.svm import SVC
 
-def SVM_Poly(x_test,y_test,Deg,Reg):
-    svr = SVC(kernel = 'poly', C = Reg, degree = Deg)
-    y_poly = svr.fit(x_test,y_test)
+def SVM_Poly(x_train,y_train,Deg,Reg):
+    svc = SVC(kernel = 'poly', C = Reg, degree = Deg, shrinking = False)
+    y_poly = svc.fit(x_train,y_train)
     return(y_poly)
-
-def oneVall(num_class,x_test,y_test,Deg,Reg):
-    entries = (y_test[:] == num_class)
-    y_oVa = np.ones(y_test.size)
+    
+def oneVall(num_class,x_train,y_train,Deg,Reg):
+    entries = (y_train[:] == num_class)
+    y_oVa = np.ones(y_train.size)
     y_oVa[~entries] = -1
-    fitted = SVM_Poly(x_test,y_oVa,Deg,Reg)
+    fitted = SVM_Poly(x_train,y_oVa,Deg,Reg)
     return fitted, y_oVa
-   
-def EinCalc(num_class,x_test,y_test,Deg,Reg):
-    fitted,y_act = oneVall(num_class,x_test,y_test,Deg,Reg)
-    y_hyp = fitted.predict(x_test)
+
+def oneVone(num_class,num_not,x_train,y_train,Deg,Reg):
+    entries = (y_train[:] == num_class) | (y_train[:] == num_not)
+    y_new = y_train[entries]
+    x_new = x_train[entries]
+    neg = (y_new[:] == num_not)
+    y_oVo = np.ones(y_new.size)
+    y_oVo[neg] = -1
+    fitted = SVM_Poly(x_new,y_oVo,Deg,Reg)
+    return(fitted, y_oVo)
+
+def EinCalc(x_train,y_train,Deg,Reg,num_class,num_not = False):
+    if num_not == False:
+        fitted,y_act = oneVall(num_class,x_train,y_train,Deg,Reg)
+    else:
+        fitted,y_act = oneVone(num_class,num_not,x_train,y_train,Deg,Reg)
+    y_hyp = fitted.predict(x_train)
     Ein = (y_act != y_hyp)
     No_SV = fitted.n_support_
     return(Ein.mean(),No_SV)
@@ -43,7 +56,8 @@ Deg = 2
 Reg = 0.01
 
 for num in dig:
-    Ein,SVs = EinCalc(num,x_test,y_test,Deg,Reg)
+    Ein,SVs = EinCalc(num_class = num, x_train = x_train, y_train = y_train, Deg = Deg, Reg = Reg)
     print('error of '+ str(num) + ' vs all: ' + str(Ein))
     print('SVs of '+ str(num) + ' vs all: ' + str(SVs))
-    
+
+#EinCalc(x_train,y_train,Deg,Reg,0,3)
