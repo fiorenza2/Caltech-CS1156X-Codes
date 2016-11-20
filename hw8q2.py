@@ -78,8 +78,9 @@ def CrossVal_1v5(x_train,y_train,Deg,Reg):
     return(E_CV)
 
 def CrossVal_exp(runs,x_train,y_train,Deg):
-    C_vals = [0.0001,0.001,0.01,0.1,1]  # list containing all the different C vals we wish to test
-    C_choice = np.zeros(runs)   # vector contaning the selected C vals for each run
+    C_vals = [0.001]  # list containing all the different C vals we wish to test
+    C_choice = np.zeros(runs)   # vector containing the selected C vals for each run
+    CV_vals = np.zeros(runs)    # vector containing the errors vals of the selected C vals
     entries = (y_train == 1) | (y_train == 5)   # boolean vector saying if 1 or 5 is in that entry
     y_new = y_train[entries]    # select only the 1 or 5 y vals
     x_new = x_train[entries]    # same for x vals
@@ -93,12 +94,13 @@ def CrossVal_exp(runs,x_train,y_train,Deg):
         CV_min = 1  # now set a dummy CV error (the error should always be smaller than 1)
         for C in C_vals:
             E_CV = CrossVal_1v5(x_new_s,y_new_s,Deg,C)  # run CV on the input value of C
-            if CV_min > E_CV:   # if the error is less than the previous value, then 
+            if CV_min > E_CV:   # if the error is less than the smallest error so far, then
+                CV_min = E_CV   # set the new min value
+                CV_vals[i] = CV_min  # store the min error for the optimal C
                 C_choice[i] = C     # select this value of C as being optimal for this run
     C_com,numb = mode(C_choice)     # take the mode of the C choices vector as being the most selected C
-    return(C_com)   # return the most selected C value
-            
-        
+    CV_val_ave = CV_vals.mean()
+    return(C_com, CV_val_ave)   # return the most selected C value
     
 feat_test = np.loadtxt('C:\\Users\\philip.ball\\Documents\\AI-DS\\edX CS1156x\\Python Scripts\\HW8Q2 Data\\features.test.txt')
 feat_train = np.loadtxt('C:\\Users\\philip.ball\\Documents\\AI-DS\\edX CS1156x\\Python Scripts\\HW8Q2 Data\\features.train.txt')
@@ -133,4 +135,4 @@ Reg = 1
 #    print('out of sample error of C = '+ str(C) + ': ' + str(Eout))
 #    print('SVs of C = '+ str(C) + ': ' + str(SVs))
 
-print(CrossVal_exp(10,x_train,y_train,Deg))
+print(CrossVal_exp(100,x_train,y_train,Deg))
