@@ -15,7 +15,8 @@ def SVM_Poly(x_train,y_train,Deg,Reg):
     y_poly = svc.fit(x_train,y_train)
     return(y_poly)
 
-def SVM_RBF(x_train,y_train,Reg):
+# note that for RBF, the deg value is ignored
+def SVM_RBF(x_train,y_train,Deg,Reg):
     svc = SVC(kernel = 'rbf', C = Reg, gamma = 1.0, shrinking = False)
     y_RBF = svc.fit(x_train,y_train)
     return(y_RBF)
@@ -42,7 +43,7 @@ def EinCalc(x_train,y_train,SV_trainer,Deg,Reg,num_class,num_not = False):
         fitted,y_act = oneVall(num_class,SV_trainer,x_train,y_train,Deg,Reg)
         x_train = x_train
     else:
-        fitted,y_act,x_new = oneVone(num_class,SV_trainer,num_not,x_train,y_train,Deg,Reg)
+        fitted,y_act,x_new = oneVone(num_class,num_not,SV_trainer,x_train,y_train,Deg,Reg)
         x_train = x_new
     y_hyp = fitted.predict(x_train)
     Ein = (y_act != y_hyp)
@@ -119,25 +120,26 @@ y_train = feat_train[:,0]
 #dig = [1,3,5,7,9]
 
 Deg = 2
-Reg = 1
+#Reg = 1
 #Reg = [0.001,0.01,0.1,1]
+Reg = [0.01,1,100,10**4,10**6]
 
 #for num in dig:
-#    Ein,SVs,model = EinCalc(x_train, y_train, Deg, Reg, num)
+#    Ein,SVs,model = EinCalc(x_train, y_train, SVM_Poly, Deg, Reg, num)
 #    print('error of '+ str(num) + ' vs all: ' + str(Ein))
 #    print('SVs of '+ str(num) + ' vs all: ' + str(SVs))
 #
-#Ein,SVs,model = EinCalc(x_train,y_train,Deg,Reg,1,5)
+#Ein,SVs,model = EinCalc(x_train,y_train, SVM_Poly,Deg,Reg,1,5)
 #Eout = EoutCalc(x_test,y_test,model,1,5)
 #print(Ein)
 #print(SVs)
 #print(Eout)
 
-#for C in Reg:
-#    Ein,SVs,model = EinCalc(x_train,y_train,Deg,C,1,5)
-#    Eout = EoutCalc(x_test,y_test,model,1,5)
-#    print('in sample error of C = '+ str(C) + ': ' + str(Ein))
-#    print('out of sample error of C = '+ str(C) + ': ' + str(Eout))
-#    print('SVs of C = '+ str(C) + ': ' + str(SVs))
+for C in Reg:
+    Ein,SVs,model = EinCalc(x_train,y_train,SVM_RBF,Deg,C,1,5)
+    Eout = EoutCalc(x_test,y_test,model,1,5)
+    print('in sample error of C = '+ str(C) + ': ' + str(Ein))
+    print('out of sample error of C = '+ str(C) + ': ' + str(Eout))
+    print('SVs of C = '+ str(C) + ': ' + str(SVs))
 
-print(CrossVal_exp(100,x_train,y_train,Deg))
+#print(CrossVal_exp(100,x_train,y_train,Deg))
