@@ -60,43 +60,43 @@ def EoutCalc(x_test, y_test, model, num_class, num_not = False):
 
 # the below assumes you have already turned your outputs into 1/-1
 def CrossVal_1v5(x_train,y_train,Deg,Reg):
-    group = 156
-    E_out = np.zeros(10)
-    for i in range(0,10):
-        start = i*group
-        end = start + group
-        if i == 9:  # as the last group will have 1 extra element
-            end = end + 1
-        x_l_out = x_train[start:end,:]
-        y_l_out = y_train[start:end]
-        x_keep = np.vstack((x_train[:start,:],x_train[end:,:]))
-        y_keep = np.hstack((y_train[:start],y_train[end:]))
-        model = SVM_Poly(x_keep,y_keep,Deg,Reg)
-        y_l_hyp = model.predict(x_l_out)
-        E_out[i] = (y_l_hyp != y_l_out).mean()
-    E_CV = E_out.mean()
+    group = 156 # for 1 v 5, there are 1561 data points, so we group into 156 (and 157 for the last)
+    E_out = np.zeros(10)    # this is a from 10, leave one out algorithm, so we store 10 errors
+    for i in range(0,10):   
+        start = i*group     # starting index
+        end = start + group     # ending index 
+        if i == 9:
+            end = end + 1   # as the last group will have 1 extra element
+        x_l_out = x_train[start:end,:]  # select the leave out elements
+        y_l_out = y_train[start:end]    # same, but for y
+        x_keep = np.vstack((x_train[:start,:],x_train[end:,:])) # select the remained elements
+        y_keep = np.hstack((y_train[:start],y_train[end:])) # same, but for y
+        model = SVM_Poly(x_keep,y_keep,Deg,Reg) # tran the model on the remained elements
+        y_l_hyp = model.predict(x_l_out)    # predict the left out y vals
+        E_out[i] = (y_l_hyp != y_l_out).mean()  # return the error of that prediction
+    E_CV = E_out.mean() # find the CV error by taking the mean of the stored errors
     return(E_CV)
 
 def CrossVal_exp(runs,x_train,y_train,Deg):
-    C_vals = [0.0001,0.001,0.01,0.1,1]
-    C_choice = np.zeros(runs)
-    entries = (y_train == 1) | (y_train == 5)
-    y_new = y_train[entries]
-    x_new = x_train[entries]
-    y_class = np.ones(entries.sum())
-    y_class[y_new == 5] = -1
-    comb = np.column_stack((y_class,x_new))
+    C_vals = [0.0001,0.001,0.01,0.1,1]  # list containing all the different C vals we wish to test
+    C_choice = np.zeros(runs)   # vector contaning the selected C vals for each run
+    entries = (y_train == 1) | (y_train == 5)   # boolean vector saying if 1 or 5 is in that entry
+    y_new = y_train[entries]    # select only the 1 or 5 y vals
+    x_new = x_train[entries]    # same for x vals
+    y_class = np.ones(entries.sum())    # create the classification vector (1 vs -1)
+    y_class[y_new == 5] = -1    # set all 5 vals to -1
+    comb = np.column_stack((y_class,x_new)) # create a combined y and x matrix for shuffling
     for i in range(0,runs):
-        np.random.shuffle(comb)
-        y_new_s = comb[:,0]
-        x_new_s = comb[:,1:]
-        CV_min = 1
+        np.random.shuffle(comb) # shuffle the order of rows
+        y_new_s = comb[:,0] # re-extract the y values
+        x_new_s = comb[:,1:]    # same for x values
+        CV_min = 1  # now set a dummy CV error (the error should always be smaller than 1)
         for C in C_vals:
-            E_CV = CrossVal_1v5(x_new_s,y_new_s,Deg,C)
-            if CV_min > E_CV:
-                C_choice[i] = C
-    C_com,numb = mode(C_choice)
-    return(C_com)
+            E_CV = CrossVal_1v5(x_new_s,y_new_s,Deg,C)  # run CV on the input value of C
+            if CV_min > E_CV:   # if the error is less than the previous value, then 
+                C_choice[i] = C     # select this value of C as being optimal for this run
+    C_com,numb = mode(C_choice)     # take the mode of the C choices vector as being the most selected C
+    return(C_com)   # return the most selected C value
             
         
     
