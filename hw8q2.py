@@ -14,30 +14,35 @@ def SVM_Poly(x_train,y_train,Deg,Reg):
     svc = SVC(kernel = 'poly', C = Reg, degree = Deg, shrinking = False, gamma = 1.0, coef0 = 1)
     y_poly = svc.fit(x_train,y_train)
     return(y_poly)
+
+def SVM_RBF(x_train,y_train,Reg):
+    svc = SVC(kernel = 'rbf', C = Reg, gamma = 1.0, shrinking = False)
+    y_RBF = svc.fit(x_train,y_train)
+    return(y_RBF)
     
-def oneVall(num_class,x_train,y_train,Deg,Reg):
+def oneVall(num_class,SV_trainer,x_train,y_train,Deg,Reg):
     entries = (y_train[:] == num_class)
     y_oVa = np.ones(y_train.size)
     y_oVa[~entries] = -1
-    fitted = SVM_Poly(x_train,y_oVa,Deg,Reg)
+    fitted = SV_trainer(x_train,y_oVa,Deg,Reg)
     return fitted, y_oVa
 
-def oneVone(num_class,num_not,x_train,y_train,Deg,Reg):
+def oneVone(num_class,num_not,SV_trainer,x_train,y_train,Deg,Reg):
     entries = (y_train[:] == num_class) | (y_train[:] == num_not)
     y_new = y_train[entries]
     x_new = x_train[entries]
     neg = (y_new[:] == num_not)
     y_oVo = np.ones(y_new.size)
     y_oVo[neg] = -1
-    fitted = SVM_Poly(x_new,y_oVo,Deg,Reg)
+    fitted = SV_trainer(x_new,y_oVo,Deg,Reg)
     return(fitted, y_oVo,x_new)
 
-def EinCalc(x_train,y_train,Deg,Reg,num_class,num_not = False):
+def EinCalc(x_train,y_train,SV_trainer,Deg,Reg,num_class,num_not = False):
     if num_not == False:
-        fitted,y_act = oneVall(num_class,x_train,y_train,Deg,Reg)
+        fitted,y_act = oneVall(num_class,SV_trainer,x_train,y_train,Deg,Reg)
         x_train = x_train
     else:
-        fitted,y_act,x_new = oneVone(num_class,num_not,x_train,y_train,Deg,Reg)
+        fitted,y_act,x_new = oneVone(num_class,SV_trainer,num_not,x_train,y_train,Deg,Reg)
         x_train = x_new
     y_hyp = fitted.predict(x_train)
     Ein = (y_act != y_hyp)
