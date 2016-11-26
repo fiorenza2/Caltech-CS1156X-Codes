@@ -47,8 +47,8 @@ def plot_OvA(Z_in,y_in,w):
 
 # where n is the number of terms, order x0,x1,x2,x1x2,x1sq,x2sq
 def transform_Z(Z,n):
-    n,m = Z.shape
-    Z0 = np.ones(n)
+    r,c = Z.shape
+    Z0 = np.ones(r)
     Z_sq = Z**2
     Z_cr = Z[:,0]*Z[:,1]
     Z_trans = np.column_stack((Z0,Z,Z_cr,Z_sq))
@@ -118,18 +118,41 @@ def transform_Z(Z,n):
 
 # finals question 8
 
+#feat_test = np.loadtxt('C:\\Users\\philip.ball\\Documents\\AI-DS\\edX CS1156x\\Python Scripts\\HW8Q2 Data\\features.test.txt')
+#feat_train = np.loadtxt('C:\\Users\\philip.ball\\Documents\\AI-DS\\edX CS1156x\\Python Scripts\\HW8Q2 Data\\features.train.txt')
+#
+#y_in = feat_train[:,0]
+#Z_in = transform_Z(feat_train[:,1:],6)
+#y_out = feat_test[:,0]
+#Z_out = transform_Z(feat_test[:,1:],6)
+#
+#nums = [0,1,2,3,4]
+#lamb = 1
+#
+#for n in nums:
+#    err,erroos,test = lin_OvA(Z_in,y_in,Z_out,y_out,lamb,n)
+#    print("Out of sample error for " + str(n)+ ":" + str(erroos))
+#    #print("All 0 error: " + str(test))
+
+# finals quetsion 9
+
 feat_test = np.loadtxt('C:\\Users\\philip.ball\\Documents\\AI-DS\\edX CS1156x\\Python Scripts\\HW8Q2 Data\\features.test.txt')
 feat_train = np.loadtxt('C:\\Users\\philip.ball\\Documents\\AI-DS\\edX CS1156x\\Python Scripts\\HW8Q2 Data\\features.train.txt')
 
 y_in = feat_train[:,0]
-Z_in = transform_Z(feat_train[:,1:],6)
+Z_in_3 = transform_Z(feat_train[:,1:],3)
+Z_in_6 = transform_Z(feat_train[:,1:],6)
 y_out = feat_test[:,0]
-Z_out = transform_Z(feat_test[:,1:],6)
+Z_out_3 = transform_Z(feat_test[:,1:],3)
+Z_out_6 = transform_Z(feat_test[:,1:],6)
 
-nums = [0,1,2,3,4]
+nums = list(range(10))
 lamb = 1
 
 for n in nums:
-    err,erroos,test = lin_OvA(Z_in,y_in,Z_out,y_out,lamb,n)
-    print("Out of sample error for " + str(n)+ ":" + str(erroos))
-    #print("All 0 error: " + str(test))
+    err_3,erroos_3,zeros3 = lin_OvA(Z_in_3,y_in,Z_out_3,y_out,lamb,n)
+    err_6,erroos_6,zeros6 = lin_OvA(Z_in_6,y_in,Z_out_6,y_out,lamb,n)
+    print("In sample error for " + str(n) + " with 3 features: " + str(err_3))
+    print("In sample error for " + str(n) + " with 6 features: " + str(err_6))
+    print("Out of sample error for " + str(n) + " with 3 features: " + str(erroos_3))
+    print("Out of sample error for " + str(n) + " with 6 features: " + str(erroos_6))
