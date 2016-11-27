@@ -29,11 +29,37 @@ def lin_OvA(Z_in,y_in,Z_out,y_out,lamb,num):
     all0_ans = ind.sum()/ind.size
     return(bin_err_in.mean(),bin_err_out.mean(),all0_ans)
 
+def lin_OvO(Z_in,y_in,Z_out,y_out,lamb,num1,num2):
+    ind = (y_in == num1) | (y_in == num2)     # total indices where either num1 or num2 appear
+    y_filt = y_in[ind]    # only the numbers we want filtered out
+    Z_filt = Z_in[ind,:]    # only the rows we want filtered out
+    y_new = np.ones(y_filt.size)
+    ind2 = y_filt == num2
+    y_new[ind2] = -1
+    w = w_reg(Z_filt,y_new,lamb)
+    y_hyp = np.sign(np.dot(w,np.transpose(Z_filt)))
+    bin_err_in = y_new != y_hyp
+    all0_ans = ind2.sum()/ind.sum()
+    y_new_o,y_hyp_o = lin_OoS_OvO(Z_out,y_out,num1,num2,w)
+    bin_err_out = y_hyp_o != y_new_o
+    plot_OvA(Z_filt,y_new,w)
+    return(bin_err_in.mean(),bin_err_out.mean(),all0_ans)
+    
 def lin_OoS(Z_out,y_out,num,w):
     ind = y_out == num
     y_new_o = np.ones(ind.size)
     y_new_o[~ind] = -1
     y_hyp_o = np.sign(np.dot(w,np.transpose(Z_out)))
+    return(y_new_o,y_hyp_o)
+
+def lin_OoS_OvO(Z_out,y_out,num1,num2,w):
+    ind = (y_out == num1) | (y_out == num2)     # total indices where either num1 or num2 appear
+    y_filt = y_out[ind]
+    Z_filt = Z_out[ind,:]
+    y_new_o = np.ones(y_filt.size)
+    ind2 = y_filt == num2
+    y_new_o[ind2] = -1
+    y_hyp_o = np.sign(np.dot(w,np.transpose(Z_filt)))
     return(y_new_o,y_hyp_o)
 
 def plot_OvA(Z_in,y_in,w):
@@ -136,23 +162,41 @@ def transform_Z(Z,n):
 
 # finals quetsion 9
 
+#feat_test = np.loadtxt('C:\\Users\\philip.ball\\Documents\\AI-DS\\edX CS1156x\\Python Scripts\\HW8Q2 Data\\features.test.txt')
+#feat_train = np.loadtxt('C:\\Users\\philip.ball\\Documents\\AI-DS\\edX CS1156x\\Python Scripts\\HW8Q2 Data\\features.train.txt')
+#
+#y_in = feat_train[:,0]
+#Z_in_3 = transform_Z(feat_train[:,1:],3)
+#Z_in_6 = transform_Z(feat_train[:,1:],6)
+#y_out = feat_test[:,0]
+#Z_out_3 = transform_Z(feat_test[:,1:],3)
+#Z_out_6 = transform_Z(feat_test[:,1:],6)
+#
+#nums = list(range(10))
+#lamb = 1
+#
+#for n in nums:
+#    err_3,erroos_3,zeros3 = lin_OvA(Z_in_3,y_in,Z_out_3,y_out,lamb,n)
+#    err_6,erroos_6,zeros6 = lin_OvA(Z_in_6,y_in,Z_out_6,y_out,lamb,n)
+#    print("In sample error for " + str(n) + " with 3 features: " + str(err_3))
+#    print("In sample error for " + str(n) + " with 6 features: " + str(err_6))
+#    print("Out of sample error for " + str(n) + " with 3 features: " + str(erroos_3))
+#    print("Out of sample error for " + str(n) + " with 6 features: " + str(erroos_6))
+#    
+# finals question 10
+
 feat_test = np.loadtxt('C:\\Users\\philip.ball\\Documents\\AI-DS\\edX CS1156x\\Python Scripts\\HW8Q2 Data\\features.test.txt')
 feat_train = np.loadtxt('C:\\Users\\philip.ball\\Documents\\AI-DS\\edX CS1156x\\Python Scripts\\HW8Q2 Data\\features.train.txt')
 
 y_in = feat_train[:,0]
-Z_in_3 = transform_Z(feat_train[:,1:],3)
-Z_in_6 = transform_Z(feat_train[:,1:],6)
+Z_in = transform_Z(feat_train[:,1:],6)
 y_out = feat_test[:,0]
-Z_out_3 = transform_Z(feat_test[:,1:],3)
-Z_out_6 = transform_Z(feat_test[:,1:],6)
+Z_out = transform_Z(feat_test[:,1:],6)
 
-nums = list(range(10))
-lamb = 1
+lamb = [0.01,1]
 
-for n in nums:
-    err_3,erroos_3,zeros3 = lin_OvA(Z_in_3,y_in,Z_out_3,y_out,lamb,n)
-    err_6,erroos_6,zeros6 = lin_OvA(Z_in_6,y_in,Z_out_6,y_out,lamb,n)
-    print("In sample error for " + str(n) + " with 3 features: " + str(err_3))
-    print("In sample error for " + str(n) + " with 6 features: " + str(err_6))
-    print("Out of sample error for " + str(n) + " with 3 features: " + str(erroos_3))
-    print("Out of sample error for " + str(n) + " with 6 features: " + str(erroos_6))
+for l in lamb:
+    err,erroos,test = lin_OvO(Z_in,y_in,Z_out,y_out,l,1,5)
+    print("In sample error for lambda " + str(l)+": " + str(err))
+    print("Out of sample error for lambda " + str(l)+ ": " + str(erroos))
+    #print("All 0 error: " + str(test))
